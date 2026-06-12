@@ -1,5 +1,6 @@
 package com.example.redbooklite.ui.feed
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.redbooklite.R
 import com.example.redbooklite.RedBookApp
 import com.example.redbooklite.model.Note
+import com.example.redbooklite.ui.detail.NoteDetailActivity
 
 class FeedFragment : Fragment(), NoteAdapter.OnNoteClickListener {
 
@@ -54,6 +56,8 @@ class FeedFragment : Fragment(), NoteAdapter.OnNoteClickListener {
     }
 
     override fun onNoteClick(note: Note) {
-        // 详情页下一步补充
+        val intent = Intent(requireContext(), NoteDetailActivity::class.java)
+        intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, note.id)
+        startActivity(intent)
     }
 }

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -13,6 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RedBookLite"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.detail.NoteDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.publish.PublishActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

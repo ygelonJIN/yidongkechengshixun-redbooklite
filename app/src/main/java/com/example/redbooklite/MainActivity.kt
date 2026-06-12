@@ -1,4 +1,4 @@
-﻿package com.example.redbooklite
+package com.example.redbooklite
 
 import android.content.Intent
 import android.graphics.Typeface
@@ -26,20 +26,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupWindowInsets()
+        setupWindow()
         setContentView(R.layout.activity_main)
-        initViews()
-        initListeners()
+        bindViews()
+        bindListeners()
         if (savedInstanceState == null) {
-            showHomePage()
+            showHome()
         }
     }
 
-    private fun setupWindowInsets() {
+    private fun setupWindow() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
     }
 
-    private fun initViews() {
+    private fun bindViews() {
         pageTitle = findViewById(R.id.tvPageTitle)
         tabHome = findViewById(R.id.tvTabHome)
         tabMarket = findViewById(R.id.tvTabMarket)
@@ -47,8 +47,8 @@ class MainActivity : AppCompatActivity() {
         tabMe = findViewById(R.id.tvTabMe)
     }
 
-    private fun initListeners() {
-        tabHome.setOnClickListener { showHomePage() }
+    private fun bindListeners() {
+        tabHome.setOnClickListener { showHome() }
         tabMarket.setOnClickListener { showToast(R.string.developing_toast) }
         findViewById<android.view.View>(R.id.tabPublish).setOnClickListener {
             startActivity(Intent(this, PublishActivity::class.java))
@@ -56,27 +56,27 @@ class MainActivity : AppCompatActivity() {
         findViewById<android.view.View>(R.id.tabMessage).setOnClickListener {
             showToast(R.string.developing_toast)
         }
-        tabMe.setOnClickListener { showProfilePage() }
+        tabMe.setOnClickListener { showProfile() }
     }
 
-    private fun showHomePage() {
-        openPage(feedFragment, getString(R.string.feed_title))
-        setSelectedTab(Tab.HOME)
+    private fun showHome() {
+        showFragment(feedFragment, getString(R.string.feed_title))
+        updateTabStyle(Tab.HOME)
     }
 
-    private fun showProfilePage() {
-        openPage(profileFragment, getString(R.string.profile_title))
-        setSelectedTab(Tab.ME)
+    private fun showProfile() {
+        showFragment(profileFragment, getString(R.string.profile_title))
+        updateTabStyle(Tab.ME)
     }
 
-    private fun openPage(fragment: Fragment, title: String) {
+    private fun showFragment(fragment: Fragment, title: String) {
         pageTitle.text = title
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .commit()
     }
 
-    private fun setSelectedTab(selected: Tab) {
+    private fun updateTabStyle(selected: Tab) {
         val activeColor = ContextCompat.getColor(this, R.color.text_primary)
         val inactiveColor = ContextCompat.getColor(this, R.color.nav_inactive)
 

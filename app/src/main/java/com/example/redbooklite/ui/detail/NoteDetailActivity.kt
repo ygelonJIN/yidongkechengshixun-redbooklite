@@ -16,6 +16,7 @@ class NoteDetailActivity : AppCompatActivity() {
 
     private lateinit var viewModel: DetailViewModel
     private lateinit var ivCover: ImageView
+    private lateinit var ivAvatar: ImageView
     private lateinit var tvTitle: TextView
     private lateinit var tvAuthor: TextView
     private lateinit var tvContent: TextView
@@ -47,6 +48,7 @@ class NoteDetailActivity : AppCompatActivity() {
 
     private fun initViews() {
         ivCover = findViewById(R.id.ivCover)
+        ivAvatar = findViewById(R.id.ivAvatar)
         tvTitle = findViewById(R.id.tvTitle)
         tvAuthor = findViewById(R.id.tvAuthor)
         tvContent = findViewById(R.id.tvContent)
@@ -60,16 +62,11 @@ class NoteDetailActivity : AppCompatActivity() {
 
     private fun initViewModel(noteId: Long) {
         val app = application as RedBookApp
-        viewModel = ViewModelProvider(
-            this,
-            DetailViewModelFactory(app.repository, noteId)
-        )[DetailViewModel::class.java]
+        viewModel = ViewModelProvider(this, DetailViewModelFactory(app.repository, noteId))[DetailViewModel::class.java]
     }
 
     private fun bindActions() {
-        btnLike.setOnClickListener {
-            viewModel.likeNote()
-        }
+        btnLike.setOnClickListener { viewModel.likeNote() }
     }
 
     private fun observeNote() {
@@ -79,10 +76,12 @@ class NoteDetailActivity : AppCompatActivity() {
                 return@observe
             }
             ImageLoader.loadCover(ivCover, note.coverPath)
+            ImageLoader.loadCover(ivAvatar, note.avatarPath)
             tvTitle.text = note.title
             tvAuthor.text = note.authorName
             tvContent.text = note.content
-            tvLikeCount.text = getString(R.string.like_format, note.likeCount)
+            tvLikeCount.text = if (note.isLiked) getString(R.string.like_format, note.likeCount) + " · 已赞" else getString(R.string.like_format, note.likeCount)
+            btnLike.text = if (note.isLiked) "已赞" else getString(R.string.like_button)
         }
     }
 

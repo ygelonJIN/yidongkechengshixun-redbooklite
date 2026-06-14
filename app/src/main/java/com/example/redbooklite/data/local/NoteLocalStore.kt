@@ -1,6 +1,7 @@
 package com.example.redbooklite.data.local
 
 import com.example.redbooklite.model.Note
+import com.example.redbooklite.model.NoteCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +25,10 @@ class NoteLocalStore {
         nextId = (notes.maxOfOrNull { it.id } ?: 0L) + 1L
     }
 
+    fun replaceAll(notes: List<Note>) {
+        saveAll(notes)
+    }
+
     fun add(note: Note) {
         saveAll(notesState.value + note)
     }
@@ -33,4 +38,11 @@ class NoteLocalStore {
     }
 
     fun getById(noteId: Long): Note? = notesState.value.find { it.id == noteId }
+
+    fun getByCategory(category: NoteCategory): List<Note> {
+        return when (category) {
+            NoteCategory.ALL -> notesState.value
+            else -> notesState.value.filter { it.category == category }
+        }
+    }
 }

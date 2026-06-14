@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.redbooklite.data.repository.NoteRepository
 import com.example.redbooklite.model.Note
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class DetailViewModel(
@@ -17,16 +18,20 @@ class DetailViewModel(
     private val _note = MutableLiveData<Note?>()
     val note: LiveData<Note?> = _note
 
+    private var observeJob: Job? = null
+
     fun loadNote() {
-        viewModelScope.launch {
-            _note.value = repository.getNoteById(noteId)
+        observeJob?.cancel()
+        observeJob = viewModelScope.launch {
+            repository.getFeedNotes().collect { notes ->
+                _note.value = notes.firstOrNull { it.id == noteId }
+            }
         }
     }
 
     fun likeNote() {
         viewModelScope.launch {
-            repository.likeNote(noteId)
-            _note.value = repository.getNoteById(noteId)
+            repository.toggleLike(noteId)
         }
     }
 }

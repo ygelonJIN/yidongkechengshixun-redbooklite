@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import com.example.redbooklite.ui.feed.FeedFragment
+import com.example.redbooklite.ui.market.MarketFragment
 import com.example.redbooklite.ui.profile.ProfileFragment
 import com.example.redbooklite.ui.publish.PublishActivity
 
@@ -22,7 +23,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabMe: TextView
 
     private val feedFragment by lazy { FeedFragment() }
+    private val marketFragment by lazy { MarketFragment() }
     private val profileFragment by lazy { ProfileFragment() }
+
+    companion object {
+        private const val REQ_PUBLISH = 1001
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,9 +55,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun bindListeners() {
         tabHome.setOnClickListener { showHome() }
-        tabMarket.setOnClickListener { showToast(R.string.developing_toast) }
+        tabMarket.setOnClickListener { showMarket() }
         findViewById<android.view.View>(R.id.tabPublish).setOnClickListener {
-            startActivity(Intent(this, PublishActivity::class.java))
+            startActivityForResult(Intent(this, PublishActivity::class.java), REQ_PUBLISH)
         }
         findViewById<android.view.View>(R.id.tabMessage).setOnClickListener {
             showToast(R.string.developing_toast)
@@ -62,6 +68,11 @@ class MainActivity : AppCompatActivity() {
     private fun showHome() {
         showFragment(feedFragment, getString(R.string.feed_title))
         updateTabStyle(Tab.HOME)
+    }
+
+    private fun showMarket() {
+        showFragment(marketFragment, getString(R.string.tab_market))
+        updateTabStyle(Tab.MARKET)
     }
 
     private fun showProfile() {
@@ -76,12 +87,20 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQ_PUBLISH && resultCode == RESULT_OK) {
+            feedFragment.refreshFeedAfterPublish()
+            showHome()
+        }
+    }
+
     private fun updateTabStyle(selected: Tab) {
         val activeColor = ContextCompat.getColor(this, R.color.text_primary)
         val inactiveColor = ContextCompat.getColor(this, R.color.nav_inactive)
 
         setTabStyle(tabHome, selected == Tab.HOME, activeColor, inactiveColor)
-        setTabStyle(tabMarket, false, activeColor, inactiveColor)
+        setTabStyle(tabMarket, selected == Tab.MARKET, activeColor, inactiveColor)
         setTabStyle(tabMessage, false, activeColor, inactiveColor)
         setTabStyle(tabMe, selected == Tab.ME, activeColor, inactiveColor)
     }
@@ -96,6 +115,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private enum class Tab {
-        HOME, ME
+        HOME, MARKET, ME
     }
 }

@@ -1,5 +1,6 @@
 package com.example.redbooklite.ui.feed
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.redbooklite.R
 import com.example.redbooklite.model.Note
+import com.example.redbooklite.ui.author.AuthorActivity
+import com.example.redbooklite.util.ImageLoader
 
 class NoteAdapter(
     private val listener: OnNoteClickListener
@@ -53,13 +56,20 @@ class NoteAdapter(
         fun bind(note: Note) {
             val displayHeight = (itemView.resources.displayMetrics.widthPixels / 2.1f / note.coverAspectRatio).toInt().coerceAtLeast(220)
             ivCover.layoutParams = ivCover.layoutParams.apply { height = displayHeight }
-            ivCover.setBackgroundColor(itemView.context.getColor(R.color.divider_light))
-            ivCover.setImageDrawable(null)
-            ivAvatar.setImageResource(android.R.drawable.sym_def_app_icon)
+            ImageLoader.loadCover(ivCover, note.coverPath)
+            ImageLoader.loadCover(ivAvatar, note.avatarPath)
             tvTitle.text = note.title
             tvAuthor.text = note.authorName
-            tvLikeCount.text = note.likeCount.toString()
+            tvLikeCount.text = if (note.isLiked) "♥ ${note.likeCount}" else note.likeCount.toString()
             itemView.setOnClickListener { listener.onNoteClick(note) }
+            val openAuthor = {
+                itemView.context.startActivity(
+                    Intent(itemView.context, AuthorActivity::class.java)
+                        .putExtra(AuthorActivity.EXTRA_AUTHOR_NAME, note.authorName)
+                )
+            }
+            tvAuthor.setOnClickListener { openAuthor() }
+            ivAvatar.setOnClickListener { openAuthor() }
         }
     }
 }
